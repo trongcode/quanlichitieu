@@ -385,6 +385,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String firstName = userFound.getFirstName();
             String lastName = userFound.getLastName();
 
+
             List<Transaction> allTransaction = getAllTransactionsByEmail(email);
 
             double expense = 0;
@@ -405,6 +406,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             balanceInfor.setBalance(balance);
             balanceInfor.setFirstName(firstName);
             balanceInfor.setLastName(lastName);
+            balanceInfor.setEmail(email);
 
             return  balanceInfor;
 

@@ -19,12 +19,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.btec.fpt.campus_expense_manager.R;
+import com.btec.fpt.campus_expense_manager.TransactionAdapter;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
+import com.btec.fpt.campus_expense_manager.entities.Transaction;
 import com.btec.fpt.campus_expense_manager.models.BalanceInfor;
 import com.btec.fpt.campus_expense_manager.models.CategoriesModel;
 import com.btec.fpt.campus_expense_manager.models.SharedViewModel;
+import com.btec.fpt.campus_expense_manager.models.TransactionInfor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +43,7 @@ public class HomeFragment extends Fragment {
     private Button  btnIncome;
     private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info, btnMenu, btnBell;
     private List<CategoriesModel> categoriesList;
-
+    private RecyclerView expenseRecView;
     public HomeFragment(){
 
     }
@@ -69,6 +74,9 @@ public class HomeFragment extends Fragment {
 
 
 
+
+
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
         String password = sharedPreferences.getString("password", null);
@@ -88,6 +96,7 @@ public class HomeFragment extends Fragment {
             adapter.addAll(expenses);
             adapter.notifyDataSetChanged();
         });
+
 
 
 
@@ -135,6 +144,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 loadFragment(new ChartFragment());
+            }
+        });
+        btnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadFragment(new MenuFragment());
+            }
+
+            private void loadFragment(MenuFragment menuFragment) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, menuFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
         return view;

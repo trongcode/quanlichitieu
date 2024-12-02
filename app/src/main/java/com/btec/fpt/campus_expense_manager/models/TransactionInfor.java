@@ -1,6 +1,19 @@
 package com.btec.fpt.campus_expense_manager.models;
 
 public class TransactionInfor {
+
+    public TransactionInfor(int item1, String description) {
+    }
+
+    public int getImageId() {
+        return ImageId;
+    }
+
+    public void setImageId(int imageId) {
+        ImageId = imageId;
+    }
+
+    private int ImageId;
     private Double Amount;
     private String Description;
     private String Date;
