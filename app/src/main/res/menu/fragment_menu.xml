@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:checkableBehavior="single">
+    <item
+        android:title="Home"
+        android:icon="@drawable/home"
+        android:checked="true"
+        />
+    <item
+        android:title="Bar Chart"
+        android:icon="@drawable/chart"
+        android:checked="true"
+        />
+    <item
+        android:title="Categories"
+        android:icon="@drawable/categories"
+        android:checked="true"
+        />
+    <item
+        android:title="Profile"
+        android:icon="@drawable/user"
+        android:checked="true"
+        />
+        <item
+            android:title="Setting"
+            android:icon="@drawable/setting"
+            android:checked="true"
+            />
+    <item
+        android:title="Logout"
+        android:icon="@drawable/logout"
+        android:checked="true"
+        />
+    </group>
+</menu>
