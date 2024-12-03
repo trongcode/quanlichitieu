@@ -28,7 +28,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate layout for each item
-        View view = LayoutInflater.from(context).inflate(R.layout.item_transaction, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.fragment_categories, parent, false);
         return new TransactionViewHolder(view);
     }
 
@@ -58,9 +58,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textViewAmount = itemView.findViewById(R.id.textViewAmount);
-            textViewDescription = itemView.findViewById(R.id.textViewDescription);
-            textViewDate = itemView.findViewById(R.id.textViewDate);
+//            textViewAmount = itemView.findViewById(R.id.textViewAmount);
+//            textViewDescription = itemView.findViewById(R.id.textViewDescription);
+//            textViewDate = itemView.findViewById(R.id.textViewDate);
         }
     }
 }

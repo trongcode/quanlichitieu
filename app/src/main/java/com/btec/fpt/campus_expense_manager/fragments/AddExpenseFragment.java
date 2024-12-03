@@ -10,6 +10,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class AddExpenseFragment extends Fragment {
     private View view;
     private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
 
+
     public AddExpenseFragment() {
 
     }
@@ -59,7 +61,10 @@ public class AddExpenseFragment extends Fragment {
         btn_categories = view.findViewById(R.id.btn_categories);
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
+        Spinner Spncategories = view.findViewById(R.id.categories_spinner);
 
+
+        String[] defaultCategories = {"Food", "Transport", "Entertainment", "Utilities", "Health"};
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
