@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:id="@+id/main">
 
     <!-- Header -->
     <RelativeLayout
@@ -23,6 +25,20 @@
             android:textStyle="bold"
             android:textColor="@android:color/white" />
     </RelativeLayout>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/re1"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/listViewCategories"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/menuLayout"
         android:layout_width="match_parent"

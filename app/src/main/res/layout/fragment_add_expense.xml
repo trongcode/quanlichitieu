@@ -50,12 +50,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/date" />
-        <Spinner
-            android:id="@+id/categories_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            />
 
     </LinearLayout>
 
@@ -63,7 +57,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@+id/ln1">
+        android:layout_below="@+id/ln1"
+        android:gravity="center_horizontal"
+        android:padding="10dp">
     <Button
         android:id="@+id/btnAddExpense"
         android:layout_width="wrap_content"
@@ -71,20 +67,17 @@
         android:backgroundTint="#F6918D"
         android:text="@string/add_expense"
         android:textColor="@color/black"
-        android:layout_weight="1"
         android:textSize="18sp"
-        android:layout_margin="20dp"
-        app:cornerRadius="15dp" />
+        app:cornerRadius="15dp"
+        android:layout_marginEnd="20dp"/>
     <Button
         android:id="@+id/btnIncome"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:backgroundTint="#F6918D"
         android:text="Add Income"
-        android:layout_weight="1"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:layout_margin="20dp"
         app:cornerRadius="15dp" />
     </LinearLayout>
     <LinearLayout

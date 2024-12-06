@@ -33,7 +33,7 @@ public class AddExpenseFragment extends Fragment {
     private DatabaseHelper dbHelper;
     private EditText amountEditText, descriptionEditText, dateEditText;
     private SharedViewModel sharedViewModel;
-    private Button button_date, addButton;
+    private Button button_date, addButton, btnIncome;
     private final Calendar calendar = Calendar.getInstance();
     private View view;
     private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
@@ -61,10 +61,10 @@ public class AddExpenseFragment extends Fragment {
         btn_categories = view.findViewById(R.id.btn_categories);
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
-        Spinner Spncategories = view.findViewById(R.id.categories_spinner);
+        btnIncome = view.findViewById(R.id.btnIncome);
 
 
-        String[] defaultCategories = {"Food", "Transport", "Entertainment", "Utilities", "Health"};
+
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +136,35 @@ public class AddExpenseFragment extends Fragment {
                 transaction.replace(R.id.fragment_container, informationFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
+            }
+        });
+        btnIncome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String description = descriptionEditText.getText().toString();
+                String amount = amountEditText.getText().toString();
+                String date = dateEditText.getText().toString();
+
+                if (!description.isEmpty() && !amount.isEmpty() && !date.isEmpty()) {
+                    // Đóng gói dữ liệu vào Bundle
+                    Bundle bundle = new Bundle();
+                    bundle.putString("description", description);
+                    bundle.putString("amount", amount);
+                    bundle.putString("date", date);
+
+                    // Tạo Fragment_income và truyền Bundle
+                    IncomeFragment fragment = new IncomeFragment();
+                    fragment.setArguments(bundle);
+
+                    // Chuyển hướng đến Fragment_income
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, fragment); // container chứa các Fragment
+                    transaction.addToBackStack(null); // Thêm vào back stack
+                    transaction.commit();
+                } else {
+                    // Nếu thiếu thông tin, hiển thị thông báo lỗi
+                    Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

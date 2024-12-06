@@ -103,16 +103,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_TYPE, type);
         values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_TYPE, "income");
 
         long result = db.insert(TABLE_TRANSACTION, null, values);
         db.close();
         return result != -1;
     }
 
+
     public Cursor getAllExpenses() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION, null);
     }
+
 
     public boolean updateTransaction(int id, double amount, String description, String date, int type, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -149,6 +152,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
+    public boolean changePassword(String email, String currentPassword, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Kiểm tra email và mật khẩu hiện tại
+        Cursor cursor = db.query(
+                TABLE_USER,
+                new String[]{COLUMN_PASSWORD},
+                COLUMN_EMAIL + " = ?",
+                new String[]{email},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Lấy mật khẩu lưu trữ trong cơ sở dữ liệu
+            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+
+            // Kiểm tra mật khẩu hiện tại
+            if (storedPassword.equals(currentPassword)) {
+                // Nếu đúng, cập nhật mật khẩu mới
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_PASSWORD, newPassword);
+
+                int rowsAffected = db.update(
+                        TABLE_USER,
+                        values,
+                        COLUMN_EMAIL + " = ?",
+                        new String[]{email}
+                );
+
+                cursor.close();
+                db.close();
+
+                // Trả về true nếu cập nhật thành công
+                return rowsAffected > 0;
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        // Trả về false nếu mật khẩu hiện tại không đúng hoặc không tìm thấy email
+        return false;
+    }
+
 
 
     public boolean updateUser(int userId, String firstName, String lastName, String email, String password) {
@@ -204,24 +255,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // Retrieve all categories as a List<Category>
-    public List<Category> getCategoryList() {
-        List<Category> categoryList = new ArrayList<>();
+    public ArrayList<String> getCategories(String email) {
+        ArrayList<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_CATEGORY, null);
+
+        Cursor cursor = db.rawQuery(
+                "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_EMAIL + " = ? OR " + COLUMN_EMAIL + " IS NULL",
+                new String[]{email}
+        );
 
         if (cursor.moveToFirst()) {
             do {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID));
-                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
-                @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-
-                Category category = new Category(id, name, email);
-                categoryList.add(category);
+                categories.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
-        return categoryList;
+        return categories;
     }
 
 
@@ -320,6 +369,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
+    // Lấy tất cả các giao dịch thu nhập cho người dùng theo email
+    public List<Transaction> getAllIncomesByEmail(String email) {
+        List<Transaction> transactionList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Lọc các giao dịch có type = 1 (thu nhập)
+        String query = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_TYPE + " = 1";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
+                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
+                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+                @SuppressLint("Range") String userEmail = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+
+                Transaction transaction = new Transaction(id, amount, description, date, type, userEmail);
+                transactionList.add(transaction);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return transactionList;
+    }
+
 
     // Function to get a user by email
     public User getUserByEmail(String email) {

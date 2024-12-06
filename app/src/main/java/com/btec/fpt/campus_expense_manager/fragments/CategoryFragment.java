@@ -4,28 +4,36 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.btec.fpt.campus_expense_manager.R;
+import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
+
+import java.util.ArrayList;
 
 public class CategoryFragment extends Fragment {
     private View view;
     private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
+    DatabaseHelper databaseHelper;
+
     public CategoryFragment() {
 
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_information, container, false);
+        view = inflater.inflate(R.layout.fragment_categories, container, false);
         btn_home_fragment = view.findViewById(R.id.btn_home_fragment);
         btn_chart = view.findViewById(R.id.btn_chart);
         btn_categories = view.findViewById(R.id.btn_categories);
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
+        databaseHelper = new DatabaseHelper(requireContext());
 
         btn_home_fragment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +100,12 @@ public class CategoryFragment extends Fragment {
                 transaction.commit();
             }
         });
+        String userEmail = "user@example.com";
+        ArrayList<String> categories = databaseHelper.getCategories(userEmail);
+        ListView listView = view.findViewById(R.id.listViewCategories);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, categories);
+        listView.setAdapter(adapter);
 
-        return null;
+        return view;
     }
 }

@@ -1,6 +1,5 @@
 package com.btec.fpt.campus_expense_manager;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -11,6 +10,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.btec.fpt.campus_expense_manager.adapters.ItemAdapter;
 import com.btec.fpt.campus_expense_manager.models.Item;
 
 import java.util.ArrayList;
