@@ -9,6 +9,11 @@ public class Transaction {
     private int type;
 
     private String email;
+    @Override
+    public String toString() {
+        return String.format("ID: %d, Amount: %.2f, Description: %s, Date: %s, Type: %d",
+                id, amount, description, date, type);
+    }
 
     public Transaction(int id, double amount, String description, String date, int type, String email) {
         this.id = id;

@@ -58,34 +58,37 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = edtEmail.getText().toString();
-                String pwd = edtPassword.getText().toString();
+                String email = edtEmail.getText().toString().trim();
+                String pwd = edtPassword.getText().toString().trim();
 
-                if(!email.isEmpty() && !pwd.isEmpty()) {
-                    boolean check = databaseHelper.signIn(email, pwd);
+                if (!email.isEmpty() && !pwd.isEmpty()) {
+                    boolean check = databaseHelper.signIn(email, pwd); // Kiểm tra thông tin đăng nhập trong cơ sở dữ liệu
                     if (check) {
-
+                        // Lưu email và trạng thái đăng nhập vào SharedPreferences
                         editor.putString("email", email);
-                        editor.putString("password", pwd);
+                        editor.putBoolean("isLoggedIn", true);
                         editor.apply();
+
+                        // Hiển thị thông báo
                         showToastCustom("Login successful");
+
+                        // Điều hướng tới HomeFragment
                         Fragment fragmentHome = new HomeFragment();
                         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.fragment_container, new HomeFragment());
+                        fragmentTransaction.replace(R.id.fragment_container, fragmentHome);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
-
                     } else {
-
                         showToastCustom("Email or password incorrect!");
                     }
-
-                    }else{
-                        showToastCustom("Email or password is invalid !!!");
-                    }
+                } else {
+                    showToastCustom("Please enter a valid email and password!");
+                }
             }
         });
+
+
 
         // Set up button to go to RegisterFragment
         registerButton.setOnClickListener(new View.OnClickListener() {
