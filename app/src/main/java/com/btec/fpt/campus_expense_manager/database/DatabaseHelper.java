@@ -3,6 +3,7 @@ package com.btec.fpt.campus_expense_manager.database;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -44,8 +45,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CATEGORY = "CATEGORY";
     private static final String COLUMN_CATEGORY_ID = "category_id";
     private static final String COLUMN_CATEGORY_NAME = "name";
+    private Context context;
 
-    public  DatabaseHelper(Context context) {
+    public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -77,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String CREATE_CATEGORY_TABLE = "CREATE TABLE " + TABLE_CATEGORY + "("
                 + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_CATEGORY_NAME + " TEXT UNIQUE NOT NULL,"
-                + COLUMN_EMAIL + " TEXT "+
+                + COLUMN_EMAIL + " TEXT " +
 
                 ")";
         db.execSQL(CREATE_CATEGORY_TABLE);
@@ -98,17 +100,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean insertTransaction(double amount, String description, String date, int type, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
+        // Thêm các giá trị vào ContentValues
         values.put(COLUMN_AMOUNT, amount);
         values.put(COLUMN_DESCRIPTION, description);
         values.put(COLUMN_DATE, date);
-        values.put(COLUMN_TYPE, type);
+        values.put(COLUMN_TYPE, type);  // type là 0 (expense) hoặc 1 (income)
         values.put(COLUMN_EMAIL, email);
-        values.put(COLUMN_TYPE, "income");
 
+        // Thực hiện việc chèn dữ liệu vào bảng
         long result = db.insert(TABLE_TRANSACTION, null, values);
         db.close();
+
+        // Nếu kết quả trả về -1 thì có lỗi xảy ra, ngược lại là chèn thành công
         return result != -1;
     }
+
 
 
     public Cursor getAllExpenses() {
@@ -152,54 +159,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
-    public boolean changePassword(String email, String currentPassword, String newPassword) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // Kiểm tra email và mật khẩu hiện tại
-        Cursor cursor = db.query(
-                TABLE_USER,
-                new String[]{COLUMN_PASSWORD},
-                COLUMN_EMAIL + " = ?",
-                new String[]{email},
-                null,
-                null,
-                null
-        );
-
-        if (cursor != null && cursor.moveToFirst()) {
-            // Lấy mật khẩu lưu trữ trong cơ sở dữ liệu
-            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
-
-            // Kiểm tra mật khẩu hiện tại
-            if (storedPassword.equals(currentPassword)) {
-                // Nếu đúng, cập nhật mật khẩu mới
-                ContentValues values = new ContentValues();
-                values.put(COLUMN_PASSWORD, newPassword);
-
-                int rowsAffected = db.update(
-                        TABLE_USER,
-                        values,
-                        COLUMN_EMAIL + " = ?",
-                        new String[]{email}
-                );
-
-                cursor.close();
-                db.close();
-
-                // Trả về true nếu cập nhật thành công
-                return rowsAffected > 0;
-            }
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-        db.close();
-
-        // Trả về false nếu mật khẩu hiện tại không đúng hoặc không tìm thấy email
-        return false;
-    }
-
 
 
     public boolean updateUser(int userId, String firstName, String lastName, String email, String password) {
@@ -214,6 +173,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return rowsAffected > 0;
     }
+
+    // Phương thức đổi mật khẩu
+    public boolean changePassword(String email, String oldPassword, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Kiểm tra mật khẩu cũ trước khi đổi
+        String hashedOldPassword = hashPassword(oldPassword);
+        if (hashedOldPassword == null) return false;
+
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_PASSWORD + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, hashedOldPassword});
+
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            db.close();
+            return false;
+        }
+        cursor.close();
+
+        // Cập nhật mật khẩu mới
+        String hashedNewPassword = hashPassword(newPassword);
+        if (hashedNewPassword == null) return false;
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PASSWORD, hashedNewPassword);
+
+        int rowsAffected = db.update(TABLE_USER, values, COLUMN_EMAIL + " = ?", new String[]{email});
+        db.close();
+
+        return rowsAffected > 0;
+    }
+
 
     public boolean deleteUser(int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -328,6 +319,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
+
     public boolean emailExists(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -361,7 +353,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
                 @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
                 @SuppressLint("Range") String email2 = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-                Transaction transaction = new Transaction(id, amount, description, date,type, email2 );
+                Transaction transaction = new Transaction(id, amount, description, date, type, email2);
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -369,6 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
+
     // Lấy tất cả các giao dịch thu nhập cho người dùng theo email
     public List<Transaction> getAllIncomesByEmail(String email) {
         List<Transaction> transactionList = new ArrayList<>();
@@ -444,10 +437,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public BalanceInfor getBalanceFromEmail(String email){
+    public BalanceInfor getBalanceFromEmail(String email) {
 
         User userFound = getUserByEmail(email);
-        if(userFound!=null){
+        if (userFound != null) {
 
             String firstName = userFound.getFirstName();
             String lastName = userFound.getLastName();
@@ -458,11 +451,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             double expense = 0;
             double income = 0;
             double balance = 0;
-            for(Transaction transaction: allTransaction){
+            for (Transaction transaction : allTransaction) {
 
-                if(transaction.getType()==0){
+                if (transaction.getType() == 0) {
                     expense += transaction.getAmount();
-                }else if(transaction.getType()==1){
+                } else if (transaction.getType() == 1) {
                     income += transaction.getAmount();
                 }
             }
@@ -475,12 +468,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             balanceInfor.setLastName(lastName);
             balanceInfor.setEmail(email);
 
-            return  balanceInfor;
+            return balanceInfor;
 
         }
 
 
-        return  null;
+        return null;
     }
 
 
@@ -557,5 +550,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return isAuthenticated;
     }
+
 
 }

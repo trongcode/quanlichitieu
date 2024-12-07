@@ -2,6 +2,7 @@ package com.btec.fpt.campus_expense_manager.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.btec.fpt.campus_expense_manager.R;
@@ -26,7 +28,7 @@ import com.btec.fpt.campus_expense_manager.models.UserInfor;
 public class InformationFragment extends Fragment {
     private View view;
     private TextView tvFullname, edt_fullname, edt_lastname, edt_firstname, edt_email;
-    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info, btnMenu;
+    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
     private DatabaseHelper dbHelper;
 
 
@@ -52,7 +54,7 @@ public class InformationFragment extends Fragment {
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
         BalanceInfor balanceInfor = dbHelper.getBalanceFromEmail(email);
         tvFullname.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
@@ -81,7 +83,7 @@ public class InformationFragment extends Fragment {
             }
 
             private void loadFragment(ChartFragment chartFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, chartFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -94,7 +96,7 @@ public class InformationFragment extends Fragment {
             }
 
             private void loadFragment(CategoryFragment categoryFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, categoryFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -107,7 +109,7 @@ public class InformationFragment extends Fragment {
             }
 
             private void loadFragment(AddExpenseFragment addExpenseFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, addExpenseFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -120,43 +122,35 @@ public class InformationFragment extends Fragment {
             }
 
             private void loadFragment(InformationFragment informationFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, informationFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
+
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-//                String email = edt_email.getText().toString();
-//                String firstName = edt_firstname.getText().toString();
-//                String lastName = edt_lastname.getText().toString();
-//                String password = edt_fullname.getText().toString();
-                int userId = sharedPreferences.getInt("userId", -1);
+            public void onClick(View v) {
+                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
 
-                boolean isDeleted = dbHelper.deleteUser(userId);
-                if(isDeleted){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
-                    editor.apply();
-                    showToastCustom("Register successfully");
-                    loadFragment(new LoginFragment());
-                }else {
-                    showToastCustom("Cannot register !! Try again");
+                Fragment fragmentLogin = new LoginFragment();
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, fragmentLogin);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
 
-                }
-            }
-
-            private void loadFragment(LoginFragment loginFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, loginFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                showToastCustom("Logged out successfully!");
             }
         });
+
         return view;
     }
+
     void showToastCustom(String message) {
 
         LayoutInflater inflater = getLayoutInflater();

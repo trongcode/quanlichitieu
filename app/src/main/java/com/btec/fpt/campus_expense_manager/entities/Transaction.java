@@ -7,7 +7,6 @@ public class Transaction {
     private String description;
     private String date;
     private int type;
-
     private String email;
 
     public Transaction(int id, double amount, String description, String date, int type, String email) {

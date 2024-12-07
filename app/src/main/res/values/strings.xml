@@ -7,4 +7,12 @@
     <string name="date">Date</string>
     <string name="add_expense">Add Expense</string>
     <string name="add_transaction">Add Transaction</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="new_password">New Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="your_email">Your Email</string>
+    <string name="change_password_txt">Change Password</string>
+    <string name="your_information">Your Information</string>
+
 </resources>

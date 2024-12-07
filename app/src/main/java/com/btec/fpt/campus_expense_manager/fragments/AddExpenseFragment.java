@@ -152,18 +152,15 @@ public class AddExpenseFragment extends Fragment {
                     bundle.putString("amount", amount);
                     bundle.putString("date", date);
 
-                    // Tạo Fragment_income và truyền Bundle
                     IncomeFragment fragment = new IncomeFragment();
                     fragment.setArguments(bundle);
 
-                    // Chuyển hướng đến Fragment_income
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
                     transaction.replace(R.id.fragment_container, fragment); // container chứa các Fragment
                     transaction.addToBackStack(null); // Thêm vào back stack
                     transaction.commit();
                 } else {
-                    // Nếu thiếu thông tin, hiển thị thông báo lỗi
-                    Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    showToastCustom("Please fill in all fields");
                 }
             }
         });
@@ -186,7 +183,7 @@ public class AddExpenseFragment extends Fragment {
 
                     FragmentManager fragmentManager = getParentFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    transaction.replace(R.id.fragment_container, new HomeFragment());
+                    transaction.replace(R.id.fragment_container, new ExpenseFragment());
                     transaction.commit();
                 } else {
                     showToastCustom("Error: Please enter information!");

@@ -33,11 +33,12 @@ public class HomeFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private TextView tvFullName, tvBalance, tvNames, tvHello;
     private ListView expensesListView;
-    private Button  btnIncome, btnExpense;
+    private Button btnIncome, btnExpense;
     private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info, btnMenu;
 
     private View view;
-    public HomeFragment(){
+
+    public HomeFragment() {
 
     }
 
@@ -46,9 +47,9 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
         dbHelper = new DatabaseHelper(getContext());
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        expensesListView = view.findViewById(R.id.expensesListView);
+
+
         tvFullName = view.findViewById(R.id.tvFullname);
         tvBalance = view.findViewById(R.id.tvBalance);
         tvNames = view.findViewById(R.id.tv_names);
@@ -63,10 +64,7 @@ public class HomeFragment extends Fragment {
         btnExpense = view.findViewById(R.id.btnExpense);
 
 
-
-
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
-
         String email = sharedPreferences.getString("email", null);
         String password = sharedPreferences.getString("password", null);
         BalanceInfor balanceInfor = dbHelper.getBalanceFromEmail(email);
@@ -76,7 +74,9 @@ public class HomeFragment extends Fragment {
         tvHello.setText(String.format("Hello %s", balanceInfor.getFirstName()));
 
 
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, new ArrayList<>());
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.list_content, new ArrayList<>());
+        expensesListView = view.findViewById(R.id.expensesListView);
         expensesListView.setAdapter(adapter);
         sharedViewModel.getExpenses().observe(getViewLifecycleOwner(), expenses -> {
             adapter.clear();
@@ -135,10 +135,10 @@ public class HomeFragment extends Fragment {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadFragment(new MenuFragment());
+                loadFragment(new ChangePassWordFragment());
             }
 
-            private void loadFragment(MenuFragment menuFragment) {
+            private void loadFragment(ChangePassWordFragment menuFragment) {
                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, menuFragment);
                 transaction.addToBackStack(null);
@@ -155,7 +155,7 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
-    void showToastCustom(String message){
+    void showToastCustom(String message) {
 
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast, view.findViewById(R.id.custom_toast_layout));
@@ -179,12 +179,14 @@ public class HomeFragment extends Fragment {
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
     private void loadFragment(CategoryFragment categoryFragment) {
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, categoryFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
     private void loadFragment(HomeFragment homeFragment) {
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, homeFragment);
@@ -205,6 +207,7 @@ public class HomeFragment extends Fragment {
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
     private void loadFragment(ExpenseFragment expenseFragment) {
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, expenseFragment);

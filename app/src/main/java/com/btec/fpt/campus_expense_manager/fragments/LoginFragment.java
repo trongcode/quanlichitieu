@@ -87,6 +87,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
+
         // Set up button to go to RegisterFragment
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
