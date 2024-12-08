@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
         // Add data to the list (image resource + text)
         itemList.add(new Item(R.drawable.item1, "Item 1"));
         itemList.add(new Item(R.drawable.item2, "Item 2"));
-        itemList.add(new Item(R.drawable.item3, "Item 3"));
+        itemList.add(new Item(R.drawable.item6, "Item 3"));
 
         // Add data to the list (image resource + text)
         itemList.add(new Item(R.drawable.item4, "Item 4"));

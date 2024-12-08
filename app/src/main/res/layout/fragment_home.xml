@@ -16,11 +16,13 @@
         android:background="@color/white">
 
         <LinearLayout
+            android:id="@+id/ln1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <!-- Header -->
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -58,7 +60,7 @@
             <!-- User Information -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:padding="10dp">
 
                 <TextView
@@ -66,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nang Trong"
-                    android:textColor="@color/black"
+                    android:textColor="#3A3A3A"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -80,12 +82,12 @@
             <!-- Visa Card -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+                android:layout_height="120dp"
                 android:layout_margin="10dp"
                 android:background="@drawable/shape_border"
                 android:backgroundTint="@color/F6918D"
                 android:orientation="vertical"
-                android:padding="25dp">
+                android:padding="15dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -113,7 +115,6 @@
                     android:textStyle="italic" />
             </LinearLayout>
 
-            <!-- Income and Expense Buttons -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -121,7 +122,7 @@
                 <Button
                     android:id="@+id/btnIncome"
                     android:layout_width="180dp"
-                    android:layout_height="115dp"
+                    android:layout_height="100dp"
                     android:layout_marginLeft="15dp"
                     android:backgroundTint="@color/F6918D"
                     android:text="Income"
@@ -132,23 +133,24 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="150dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="30dp"
                     android:src="@drawable/up" />
 
                 <Button
                     android:id="@+id/btnExpense"
                     android:layout_width="180dp"
-                    android:layout_height="115dp"
+                    android:layout_height="100dp"
                     android:layout_marginLeft="210dp"
                     android:backgroundTint="#2196F3"
                     android:text="Expense"
                     android:textSize="24dp"
                     app:cornerRadius="15dp" />
+
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="350dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginLeft="345dp"
+                    android:layout_marginTop="32dp"
                     android:src="@drawable/down" />
             </RelativeLayout>
 
@@ -156,188 +158,43 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="10dp">
+                <!--                <LinearLayout-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="0dp"-->
+                <!--                    android:layout_marginBottom="10dp">-->
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                <!--                    <RelativeLayout-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content">-->
 
-                        <RelativeLayout
-                            android:id="@+id/category1"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_blue">
+                <!--                        <RelativeLayout-->
+                <!--                            android:id="@+id/category1"-->
+                <!--                            android:layout_width="35dp"-->
+                <!--                            android:layout_height="35dp"-->
+                <!--                            android:layout_centerHorizontal="true"-->
+                <!--                            android:layout_margin="20dp"-->
+                <!--                            android:background="@drawable/shape_border_blue">-->
 
-                            <ImageView
-                                android:id="@+id/img1"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item1" />
+                <!--                            <ImageView-->
+                <!--                                android:id="@+id/img1"-->
+                <!--                                android:layout_width="20dp"-->
+                <!--                                android:layout_height="20dp"-->
+                <!--                                android:layout_centerInParent="true"-->
+                <!--                                android:src="@drawable/item1" />-->
 
-                        </RelativeLayout>
+                <!--                        </RelativeLayout>-->
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category1"
-                            android:layout_centerHorizontal="true"
-                            android:text="Mua sắm"
-                            android:textAlignment="center"
-                            android:textSize="10sp" />
-                    </RelativeLayout>
-
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/category2"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_green">
-
-                            <ImageView
-                                android:id="@+id/img2"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item2" />
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category2"
-                            android:layout_centerHorizontal="true"
-                            android:text="Tiền trả ngân hàng"
-                            android:textSize="10sp" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/category3"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_grey">
-
-                            <ImageView
-                                android:id="@+id/img3"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item3" />
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category3"
-                            android:layout_centerHorizontal="true"
-                            android:text="Tiền lương"
-                            android:textSize="10sp" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/category4"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_orange">
-
-                            <ImageView
-                                android:id="@+id/img4"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item4" />
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category4"
-                            android:layout_centerHorizontal="true"
-                            android:text="Tiền điện nước"
-                            android:textSize="10sp" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/category5"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_pink">
-
-                            <ImageView
-                                android:id="@+id/img5"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item5" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category5"
-                            android:layout_centerHorizontal="true"
-                            android:text="Tiền nhà"
-                            android:textSize="10sp" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/category6"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_margin="20dp"
-                            android:background="@drawable/shape_border_red">
-
-                            <ImageView
-                                android:id="@+id/img6"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/item6" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/category6"
-                            android:text="Tiền bảo hiểm"
-                            android:textSize="10sp" />
-
-                    </RelativeLayout>
-                </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="match_parent"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_below="@id/category1"-->
+                <!--                            android:layout_centerHorizontal="true"-->
+                <!--                            android:text="Mua sắm"-->
+                <!--                            android:textAlignment="center"-->
+                <!--                            android:textSize="10sp" />-->
+                <!--                    </RelativeLayout>-->
+                <!--                </LinearLayout>-->
             </HorizontalScrollView>
 
             <!-- Expense List Title -->
@@ -345,12 +202,9 @@
                 android:id="@+id/expenseListTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:padding="10dp"
                 android:text="Expense List"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -361,11 +215,12 @@
                     android:id="@+id/expensesListView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="8dp"/>
+                    android:padding="8dp" />
             </LinearLayout>
 
 
         </LinearLayout>
+
     </RelativeLayout>
 
 

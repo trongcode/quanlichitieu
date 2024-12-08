@@ -7,7 +7,6 @@ public class Transaction {
     private String description;
     private String date;
     private int type;
-
     private String email;
     @Override
     public String toString() {

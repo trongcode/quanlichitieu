@@ -129,27 +129,23 @@ public class InformationFragment extends Fragment {
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Lấy SharedPreferences
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                String email = edt_email.getText().toString();
+//                String firstName = edt_firstname.getText().toString();
+//                String lastName = edt_lastname.getText().toString();
+//                String password = edt_fullname.getText().toString();
+                int userId = sharedPreferences.getInt("userId", -1);
 
-                // Xóa thông tin người dùng trong SharedPreferences
-                editor.clear();
-                editor.apply();
+                boolean isDeleted = dbHelper.deleteUser(userId);
+                if(isDeleted){
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();
+                    editor.apply();
+                    showToastCustom("Register successfully");
+                    loadFragment(new LoginFragment());
+                }else {
+                    showToastCustom("Cannot register !! Try again");
 
-                // Hiển thị thông báo logout thành công
-                showToastCustom("Logged out successfully");
-
-                // Điều hướng về LoginFragment
-                loadFragment(new LoginFragment());
-            }
-
-            // Hàm điều hướng giữa các fragment
-            private void loadFragment(Fragment fragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, fragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                }
             }
 
             private void loadFragment(LoginFragment loginFragment) {
@@ -178,5 +174,4 @@ public class InformationFragment extends Fragment {
         toast.show();
 
     }
-
 }

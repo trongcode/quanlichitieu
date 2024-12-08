@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
-import android.util.Log;
 
 import com.btec.fpt.campus_expense_manager.entities.Transaction;
 import com.btec.fpt.campus_expense_manager.entities.User;
@@ -112,7 +111,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
+    public Cursor getAllExpenses() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION, null);
+    }
 
 
     public boolean updateTransaction(int id, double amount, String description, String date, int type, String email) {
@@ -149,6 +151,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(TABLE_USER, null, values);
         db.close();
         return result != -1;
+    }
+    public boolean changePassword(String email, String currentPassword, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Kiểm tra email và mật khẩu hiện tại
+        Cursor cursor = db.query(
+                TABLE_USER,
+                new String[]{COLUMN_PASSWORD},
+                COLUMN_EMAIL + " = ?",
+                new String[]{email},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Lấy mật khẩu lưu trữ trong cơ sở dữ liệu
+            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+
+            // Kiểm tra mật khẩu hiện tại
+            if (storedPassword.equals(currentPassword)) {
+                // Nếu đúng, cập nhật mật khẩu mới
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_PASSWORD, newPassword);
+
+                int rowsAffected = db.update(
+                        TABLE_USER,
+                        values,
+                        COLUMN_EMAIL + " = ?",
+                        new String[]{email}
+                );
+
+                cursor.close();
+                db.close();
+
+                // Trả về true nếu cập nhật thành công
+                return rowsAffected > 0;
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        // Trả về false nếu mật khẩu hiện tại không đúng hoặc không tìm thấy email
+        return false;
     }
 
 
@@ -257,62 +306,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categoryList;
     }
 
-
-    public List<Transaction> getTransactionsByEmail(String email) {
-        List<Transaction> transactionList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        // Use parameterized queries to prevent SQL injection
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ?", new String[]{email});
-
-        if (cursor.moveToFirst()) {
-            do {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
-                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
-                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
-                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                @SuppressLint("Range") String emailFromDb = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-                Transaction transaction = new Transaction(id, amount, description, date, type, emailFromDb);
-                transactionList.add(transaction);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return transactionList;
-    }
-
-
-
-
-    public List<Transaction> getTransactionByEmail(String email) {
-        List<Transaction> transactionList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Query to filter transactions by email
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ?",
-                new String[]{email}
-        );
-
-        if (cursor.moveToFirst()) {
-            do {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
-                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
-                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
-                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                Transaction transaction = new Transaction(id, amount, description, date, type, email);
-                transactionList.add(transaction);
-            } while (cursor.moveToNext());
-        }
-
-        // Close cursor and database
-        cursor.close();
-        db.close();
-
-        return transactionList;
-    }
-
     // Retrieve all transactions
     public List<Transaction> getTransactionList() {
         List<Transaction> transactionList = new ArrayList<>();
@@ -376,29 +369,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
-
-    public void addTransaction(double amount, String description, String date, int type, String email) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_AMOUNT, amount);
-        values.put(COLUMN_DESCRIPTION, description);
-        values.put(COLUMN_DATE, date);
-        values.put(COLUMN_TYPE, type);
-        values.put(COLUMN_EMAIL, email); // Associate the transaction with the email
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(TABLE_TRANSACTION, null, values);
-
-        if (newRowId == -1) {
-            // Handle error: Transaction not added
-            Log.e("Database Error", "Failed to add transaction");
-        } else {
-            Log.d("Database Success", "Transaction added with ID: " + newRowId);
-        }
-        db.close();
-    }
-
     // Lấy tất cả các giao dịch thu nhập cho người dùng theo email
     public List<Transaction> getAllIncomesByEmail(String email) {
         List<Transaction> transactionList = new ArrayList<>();
@@ -472,10 +442,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return userList;
     }
-
-
-
-
 
 
     public BalanceInfor getBalanceFromEmail(String email){
@@ -591,41 +557,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return isAuthenticated;
     }
-    public boolean changePassword(String email, String oldPassword, String newPassword) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        // Hash mật khẩu cũ và mật khẩu mới
-        String hashedOldPassword = hashPassword(oldPassword);
-        String hashedNewPassword = hashPassword(newPassword);
-
-        if (hashedOldPassword == null || hashedNewPassword == null) {
-            db.close();
-            return false; // Hashing failed
-        }
-
-        // Kiểm tra email và mật khẩu cũ
-        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_PASSWORD + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email, hashedOldPassword});
-
-        if (cursor.getCount() > 0) {
-            // Mật khẩu cũ đúng, tiến hành cập nhật mật khẩu mới
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_PASSWORD, hashedNewPassword);
-
-            int rowsAffected = db.update(TABLE_USER, values, COLUMN_EMAIL + " = ?", new String[]{email});
-            cursor.close();
-            db.close();
-
-            return rowsAffected > 0; // Trả về true nếu cập nhật thành công
-        } else {
-            // Mật khẩu cũ sai
-            cursor.close();
-            db.close();
-            return false;
-        }
-    }
-
-
-    public void insertDefaultCategories(String mail) {
-    }
 }
