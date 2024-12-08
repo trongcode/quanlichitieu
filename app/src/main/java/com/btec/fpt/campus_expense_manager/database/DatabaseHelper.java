@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
+import android.util.Log;
 
 import com.btec.fpt.campus_expense_manager.entities.Transaction;
 import com.btec.fpt.campus_expense_manager.entities.User;
@@ -59,7 +60,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_DESCRIPTION + " TEXT, "
                 + COLUMN_DATE + " TEXT,"
                 + COLUMN_TYPE + " INTEGER,"
-                + COLUMN_EMAIL + " TEXT" +
+                + COLUMN_EMAIL + " TEXT,"
+                + COLUMN_CATEGORY_NAME + " TEXT"
+                +
 
                 ")";
         db.execSQL(CREATE_TRANSACTION_TABLE);
@@ -103,12 +106,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_TYPE, type);
         values.put(COLUMN_EMAIL, email);
-        values.put(COLUMN_TYPE, "income");
 
-        long result = db.insert(TABLE_TRANSACTION, null, values);
-        db.close();
-        return result != -1;
+        try {
+            long result = db.insert(TABLE_TRANSACTION, null, values);
+            return result != -1; // Return true if insertion is successful
+        } catch (Exception e) {
+            Log.e("Database Error", "Error inserting transaction", e);
+            return false; // Return false if there was an error
+        } finally {
+            db.close(); // Ensure the database is closed
+        }
     }
+
 
 
     public Cursor getAllExpenses() {
@@ -306,12 +315,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categoryList;
     }
 
-    // Retrieve all transactions
-    public List<Transaction> getTransactionList() {
+
+    public List<Transaction> getTransactionsByEmail(String email) {
         List<Transaction> transactionList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION, null);
-
+        // Use parameterized queries to prevent SQL injection
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ?", new String[]{email});
         if (cursor.moveToFirst()) {
             do {
                 @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
@@ -319,8 +328,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
                 @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-                Transaction transaction = new Transaction(id, amount, description, date, type, email);
+                @SuppressLint("Range") String emailFromDb = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+                Transaction transaction = new Transaction(id, amount, description, date, type, emailFromDb);
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -328,6 +337,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
+
+
+
+    // Retrieve all transactions
+
     public boolean emailExists(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
 

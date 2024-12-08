@@ -7,4 +7,6 @@
     <string name="date">Date</string>
     <string name="add_expense">Add Expense</string>
     <string name="add_transaction">Add Transaction</string>
+    <string name="your_information">Information</string>
+    <string name="type">type</string>
 </resources>

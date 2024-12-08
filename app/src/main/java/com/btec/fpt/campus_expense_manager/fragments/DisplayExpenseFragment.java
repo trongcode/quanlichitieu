@@ -1,5 +1,7 @@
 package com.btec.fpt.campus_expense_manager.fragments;
 
+import static com.btec.fpt.campus_expense_manager.R.id.expensesListView;
+
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ public class DisplayExpenseFragment extends Fragment {
         return null;
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
