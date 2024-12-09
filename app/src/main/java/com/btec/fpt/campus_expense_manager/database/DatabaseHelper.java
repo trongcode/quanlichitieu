@@ -152,52 +152,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
-    public boolean changePassword(String email, String currentPassword, String newPassword) {
+    public boolean changePassword(String email, String oldPassword, String newPassword) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // Kiểm tra email và mật khẩu hiện tại
-        Cursor cursor = db.query(
-                TABLE_USER,
-                new String[]{COLUMN_PASSWORD},
-                COLUMN_EMAIL + " = ?",
-                new String[]{email},
-                null,
-                null,
-                null
-        );
+        // Kiểm tra mật khẩu cũ trước khi đổi
+        String hashedOldPassword = hashPassword(oldPassword);
+        if (hashedOldPassword == null) return false;
 
-        if (cursor != null && cursor.moveToFirst()) {
-            // Lấy mật khẩu lưu trữ trong cơ sở dữ liệu
-            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_PASSWORD + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, hashedOldPassword});
 
-            // Kiểm tra mật khẩu hiện tại
-            if (storedPassword.equals(currentPassword)) {
-                // Nếu đúng, cập nhật mật khẩu mới
-                ContentValues values = new ContentValues();
-                values.put(COLUMN_PASSWORD, newPassword);
-
-                int rowsAffected = db.update(
-                        TABLE_USER,
-                        values,
-                        COLUMN_EMAIL + " = ?",
-                        new String[]{email}
-                );
-
-                cursor.close();
-                db.close();
-
-                // Trả về true nếu cập nhật thành công
-                return rowsAffected > 0;
-            }
-        }
-
-        if (cursor != null) {
+        if (cursor.getCount() == 0) {
             cursor.close();
+            db.close();
+            return false;
         }
+        cursor.close();
+
+        // Cập nhật mật khẩu mới
+        String hashedNewPassword = hashPassword(newPassword);
+        if (hashedNewPassword == null) return false;
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PASSWORD, hashedNewPassword);
+
+        int rowsAffected = db.update(TABLE_USER, values, COLUMN_EMAIL + " = ?", new String[]{email});
         db.close();
 
-        // Trả về false nếu mật khẩu hiện tại không đúng hoặc không tìm thấy email
-        return false;
+        return rowsAffected > 0;
     }
 
 

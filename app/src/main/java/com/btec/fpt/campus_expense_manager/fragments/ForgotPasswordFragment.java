@@ -29,7 +29,7 @@ public class ForgotPasswordFragment extends Fragment {
     }
 
     private EditText newFirstNameEditText, newLastNameEditText, newEmailEditText, newPasswordEditText;
-    private Button saveButton;
+    private Button saveButton, btn_login;
     private DatabaseHelper dbHelper;
     private View view;
 
@@ -48,10 +48,27 @@ public class ForgotPasswordFragment extends Fragment {
         newEmailEditText = view.findViewById(R.id.new_email);
         newPasswordEditText = view.findViewById(R.id.new_password);
         saveButton = view.findViewById(R.id.save_button_forgot);
+        btn_login = view.findViewById(R.id.btn_login);
 
         // Khởi tạo DatabaseHelper
         dbHelper = new DatabaseHelper(getContext());
 
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadFragment(new LoginFragment());
+            }
+
+            private void loadFragment(LoginFragment loginFragment) {
+                Fragment fragment = new LoginFragment();
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new LoginFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
 
         saveButton.setOnClickListener(v -> {
             String newFirstName = newFirstNameEditText.getText().toString().trim();

@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="24dp"
         android:src="@drawable/logo_asm" />
@@ -48,6 +48,12 @@
             android:layout_marginTop="20dp"
             android:hint="Password"
             android:inputType="textPassword" />
+        <CheckBox
+            android:id="@+id/remember_me"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remember Me"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 
     <Button

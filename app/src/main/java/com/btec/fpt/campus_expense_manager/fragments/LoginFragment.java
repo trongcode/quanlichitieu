@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,56 +37,85 @@ public class LoginFragment extends Fragment {
     }
 
     // Initialize SharedPreferences
-    DatabaseHelper databaseHelper =null;
+    DatabaseHelper databaseHelper;
 
     View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
          view = inflater.inflate(R.layout.fragment_login, container, false);
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+
+
         databaseHelper = new DatabaseHelper(getContext());
 
         Button loginButton = view.findViewById(R.id.login_button);
         Button registerButton = view.findViewById(R.id.register_button);
         Button forgotPasswordButton = view.findViewById(R.id.forgot_password_button);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-
         EditText edtEmail = view.findViewById(R.id.email);
         EditText edtPassword = view.findViewById(R.id.password);
+        CheckBox rememberMe = view.findViewById(R.id.remember_me);
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        boolean rememberMeChecked = sharedPreferences.getBoolean("remember_me", true);
+        rememberMe.setChecked(rememberMeChecked);
+        // Nếu "Remember Me" được chọn, điền email và password vào EditText
+        if (rememberMeChecked) {
+            String savedEmail = sharedPreferences.getString("email", "");
+            String savedPassword = sharedPreferences.getString("password", "");
+
+            if (!savedEmail.isEmpty() && !savedPassword.isEmpty()) {
+                edtEmail.setText(savedEmail);  // Điền email vào EditText
+                edtPassword.setText(savedPassword);  // Điền password vào EditText
+            }
+        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = edtEmail.getText().toString();
-                String pwd = edtPassword.getText().toString();
+                String email = edtEmail.getText().toString().trim();
+                String pwd = edtPassword.getText().toString().trim();
 
-                if(!email.isEmpty() && !pwd.isEmpty()) {
-                    boolean check = databaseHelper.signIn(email, pwd);
-                    if (check) {
+                // Kiểm tra nếu các trường không trống
+                if (email.isEmpty() || pwd.isEmpty()) {
+                    showToastCustom("Email and Password cannot be empty!");
+                    return;
+                }
 
+                // Kiểm tra đăng nhập
+                boolean check = databaseHelper.signIn(email, pwd);
+                if (check) {
+                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    // Lưu thông tin nếu Checkbox "Remember Me" được chọn
+                    if (rememberMe.isChecked()) {
+                        // Lưu dữ liệu vào SharedPreferences
                         editor.putString("email", email);
                         editor.putString("password", pwd);
-                        editor.apply();
-                        showToastCustom("Login successful");
-                        Fragment fragmentHome = new HomeFragment();
-                        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.fragment_container, new HomeFragment());
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
-
+                        editor.putBoolean("remember_me", true);
+                        editor.apply(); // Lưu dữ liệu
                     } else {
-
-                        showToastCustom("Email or password incorrect!");
+                        // Không lưu dữ liệu khi CheckBox không được chọn
+                        editor.putBoolean("remember_me", false);
+                        editor.apply(); // Cập nhật thay đổi
                     }
 
-                    }else{
-                        showToastCustom("Email or password is invalid !!!");
-                    }
+                    // Chuyển sang màn hình chính
+                    showToastCustom("Login successful");
+                    Fragment fragmentHome = new HomeFragment();
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_container, fragmentHome);
+                    fragmentTransaction.addToBackStack(null); // Cho phép quay lại màn hình login
+                    fragmentTransaction.commit();
+                } else {
+                    showToastCustom("Incorrect email or password!");
+                }
             }
         });
+
+
+
 
         // Set up button to go to RegisterFragment
         registerButton.setOnClickListener(new View.OnClickListener() {

@@ -25,6 +25,7 @@ import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 import com.btec.fpt.campus_expense_manager.models.BalanceInfor;
 import com.btec.fpt.campus_expense_manager.models.SharedViewModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
@@ -46,7 +47,7 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
         dbHelper = new DatabaseHelper(getContext());
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
 
         expensesListView = view.findViewById(R.id.expensesListView);
         tvFullName = view.findViewById(R.id.tvFullname);
@@ -54,7 +55,7 @@ public class HomeFragment extends Fragment {
         tvNames = view.findViewById(R.id.tv_names);
         tvHello = view.findViewById(R.id.tv_name);
         btnIncome = view.findViewById(R.id.btnIncome);
-        btnMenu = view.findViewById(R.id.btnMenu);
+        btnMenu = view.findViewById(R.id.btn_change_pass);
         btn_home_fragment = view.findViewById(R.id.btn_home_fragment);
         btn_chart = view.findViewById(R.id.btn_chart);
         btn_categories = view.findViewById(R.id.btn_categories);
@@ -71,11 +72,12 @@ public class HomeFragment extends Fragment {
         String password = sharedPreferences.getString("password", null);
         BalanceInfor balanceInfor = dbHelper.getBalanceFromEmail(email);
         tvFullName.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
-        tvBalance.setText(String.format("%s", balanceInfor.getBalance()));
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+        tvBalance.setText(decimalFormat.format(balanceInfor.getBalance()) + " VND");
         tvNames.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
         tvHello.setText(String.format("Hello %s", balanceInfor.getFirstName()));
 
-
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, new ArrayList<>());
         expensesListView.setAdapter(adapter);
         sharedViewModel.getExpenses().observe(getViewLifecycleOwner(), expenses -> {
@@ -108,12 +110,6 @@ public class HomeFragment extends Fragment {
                 loadFragment(new IncomeFragment());
             }
         });
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showToastCustom("You pressed the menu button!!!");
-            }
-        });
         btn_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +136,7 @@ public class HomeFragment extends Fragment {
 
             private void loadFragment(MenuFragment menuFragment) {
                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, menuFragment);
+                transaction.replace(R.id.fragment_container, new ChangePassWordFragment());
                 transaction.addToBackStack(null);
                 transaction.commit();
             }

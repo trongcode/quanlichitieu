@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.btec.fpt.campus_expense_manager.R;
@@ -129,30 +130,31 @@ public class InformationFragment extends Fragment {
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                String email = edt_email.getText().toString();
-//                String firstName = edt_firstname.getText().toString();
-//                String lastName = edt_lastname.getText().toString();
-//                String password = edt_fullname.getText().toString();
-                int userId = sharedPreferences.getInt("userId", -1);
+                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                boolean isDeleted = dbHelper.deleteUser(userId);
-                if(isDeleted){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
+                boolean rememberMeChecked = sharedPreferences.getBoolean("remember_me", false);
+                if (rememberMeChecked) {
+                    // Nếu "Remember Me" được chọn, xóa dữ liệu (email, password)
+                    editor.putBoolean("remember_me", true);
                     editor.apply();
-                    showToastCustom("Register successfully");
-                    loadFragment(new LoginFragment());
-                }else {
-                    showToastCustom("Cannot register !! Try again");
-
+                } else {
+                    editor.putString("email", "");
+                    editor.putString("password", "");
+                    editor.putBoolean("remember_me", false);
+                    editor.clear();// Cập nhật trạng thái của checkbox
+                    editor.apply();
                 }
-            }
 
-            private void loadFragment(LoginFragment loginFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, loginFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                // Chuyển đến LoginFragment
+                Fragment fragmentLogin = new LoginFragment();
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, fragmentLogin);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+
+                showToastCustom("Logged out successfully!");
             }
         });
         return view;

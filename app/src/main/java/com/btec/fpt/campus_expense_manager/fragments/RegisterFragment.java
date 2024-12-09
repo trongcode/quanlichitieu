@@ -25,7 +25,7 @@ import com.btec.fpt.campus_expense_manager.R;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 
 public class RegisterFragment extends Fragment {
-    DatabaseHelper databaseHelper = null;
+    DatabaseHelper databaseHelper;
     public RegisterFragment() {
         // Required empty public constructor
     }
@@ -36,7 +36,7 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_register, container, false);
-        databaseHelper = new DatabaseHelper(getContext());
+        databaseHelper = new DatabaseHelper(requireContext());
         EditText edtFirstName = view.findViewById(R.id.firstName);
         EditText edtLastName = view.findViewById(R.id.lastName);
         EditText edtEmail = view.findViewById(R.id.email);
@@ -56,9 +56,22 @@ public class RegisterFragment extends Fragment {
                 String confirmPassword = edtConfirmPassword.getText().toString();
 
                 boolean check = databaseHelper.signUp(firstName, lastName,email,password);
+                if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    showToastCustom("Please fill in all fields");
+                    return;
+                }
 
+                if (!password.equals(confirmPassword)) {
+                    showToastCustom("Passwords do not match");
+                    return;
+                }
                 if(check){
                     showToastCustom("Register successfully");
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.fragment_container, new LoginFragment()); // R.id.fragment_container là layout chứa fragment
+                    transaction.addToBackStack(null); // Thêm vào BackStack để có thể quay lại
+                    transaction.commit();
                 }else {
                     showToastCustom("Cannot register !! Try again");
                 }

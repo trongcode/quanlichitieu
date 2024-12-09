@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.btec.fpt.campus_expense_manager.R;
-import com.btec.fpt.campus_expense_manager.adapters.ExpensesAdapter;
+import com.btec.fpt.campus_expense_manager.adapters.IncomeAdapter;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 
 public class IncomeFragment extends Fragment {

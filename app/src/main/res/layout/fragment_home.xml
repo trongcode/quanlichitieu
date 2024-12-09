@@ -28,7 +28,7 @@
                 android:padding="10dp">
 
                 <ImageButton
-                    android:id="@+id/btnMenu"
+                    android:id="@+id/btn_change_pass"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
@@ -58,7 +58,7 @@
             <!-- User Information -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:padding="10dp">
 
                 <TextView
@@ -70,29 +70,24 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/logo_asm" />
             </RelativeLayout>
 
             <!-- Visa Card -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/shape_border"
                 android:backgroundTint="@color/F6918D"
                 android:orientation="vertical"
-                android:padding="25dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="VISA"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -114,43 +109,34 @@
             </LinearLayout>
 
             <!-- Income and Expense Buttons -->
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                >
 
                 <Button
                     android:id="@+id/btnIncome"
-                    android:layout_width="180dp"
-                    android:layout_height="115dp"
-                    android:layout_marginLeft="15dp"
+                    android:layout_width="130dp"
+                    android:layout_height="match_parent"
                     android:backgroundTint="@color/F6918D"
                     android:text="Income"
                     android:textSize="24dp"
                     app:cornerRadius="15dp" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="150dp"
-                    android:layout_marginTop="40dp"
-                    android:src="@drawable/up" />
-
                 <Button
                     android:id="@+id/btnExpense"
-                    android:layout_width="180dp"
-                    android:layout_height="115dp"
-                    android:layout_marginLeft="210dp"
+                    android:layout_width="150dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="43dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_toEndOf="@+id/btnIncome"
                     android:backgroundTint="#2196F3"
                     android:text="Expense"
                     android:textSize="24dp"
                     app:cornerRadius="15dp" />
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="350dp"
-                    android:layout_marginTop="40dp"
-                    android:src="@drawable/down" />
-            </RelativeLayout>
+            </LinearLayout>
 
             <HorizontalScrollView
                 android:layout_width="wrap_content"
