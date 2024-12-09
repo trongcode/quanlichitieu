@@ -39,51 +39,20 @@
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         android:layout_below="@+id/re1"
-        android:padding="20dp">
-        <TextView
-            android:layout_width="wrap_content"
+        android:orientation="vertical">
+        <Spinner
+            android:id="@+id/categorySpinnerI"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description: "
-            android:textStyle="bold"
-            android:textSize="20dp"/>
-        <TextView
-            android:id="@+id/descriptionTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description" />
-
-        <TextView
-            android:id="@+id/amountTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="Amount: " />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Amount " />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="Date: " />
-        <TextView
-            android:id="@+id/dateTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date " />
-
+            android:spinnerMode="dropdown" />
+        <ListView
+            android:id="@+id/incomeListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"/>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/menuLayout"
         android:layout_width="match_parent"

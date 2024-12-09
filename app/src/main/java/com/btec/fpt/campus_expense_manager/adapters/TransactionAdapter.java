@@ -42,6 +42,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         holder.textViewAmount.setText(String.format("Amount: $%.2f", transaction.getAmount()));
         holder.textViewDescription.setText(String.format("Description: %s", transaction.getDescription()));
         holder.textViewDate.setText(String.format("Date: %s", transaction.getDate()));
+
     }
 
     @Override

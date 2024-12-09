@@ -51,6 +51,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/date" />
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+
         <RadioGroup
             android:id="@+id/typeRadioGroup"
             android:layout_width="wrap_content"
@@ -70,12 +76,12 @@
                 android:layout_height="wrap_content"
                 android:text="Income" />
         </RadioGroup>
-       <EditText
+    <!--   <EditText
         android:id="@+id/EdtType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="@string/type" />
+        android:hint="@string/type" />-->
 
 
 

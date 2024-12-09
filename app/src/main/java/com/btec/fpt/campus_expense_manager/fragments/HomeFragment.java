@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment {
 
     private void loadTransactionsByEmail(String email) {
         // Fetch all transactions by email
-        List<Transaction> transactions = dbHelper.getTransactionsByEmail(email);
+        List<Transaction> transactions = dbHelper.getAllTransactionsByEmail(email);
         // Clear the adapter and add the fetched transactions
         adapter.clear();
         for (Transaction transaction : transactions) {

@@ -15,23 +15,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.btec.fpt.campus_expense_manager.R;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 import com.btec.fpt.campus_expense_manager.models.BalanceInfor;
-import com.btec.fpt.campus_expense_manager.models.UserInfor;
 
 public class InformationFragment extends Fragment {
     private View view;
     private TextView tvFullname, edt_fullname, edt_lastname, edt_firstname, edt_email;
-    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info, btnMenu;
+    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
     private DatabaseHelper dbHelper;
 
-
     public InformationFragment() {
-
+        // Required empty public constructor
     }
 
     @Override
@@ -40,6 +39,7 @@ public class InformationFragment extends Fragment {
 
         dbHelper = new DatabaseHelper(getContext());
 
+        // Initialize views
         edt_fullname = view.findViewById(R.id.edt_fullname);
         edt_email = view.findViewById(R.id.edt_email);
         tvFullname = view.findViewById(R.id.tvFullname);
@@ -52,126 +52,61 @@ public class InformationFragment extends Fragment {
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
 
+        // Load user information from SharedPreferences
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
         BalanceInfor balanceInfor = dbHelper.getBalanceFromEmail(email);
-        tvFullname.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
-        edt_fullname.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
-        edt_email.setText(balanceInfor.getEmail());
-        edt_firstname.setText(balanceInfor.getFirstName());
-        edt_lastname.setText(balanceInfor.getLastName());
 
-        btn_home_fragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new HomeFragment());
-            }
+        // Display user information
+        if (balanceInfor != null) {
+            tvFullname.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
+            edt_fullname.setText(String.format("%s %s", balanceInfor.getLastName(), balanceInfor.getFirstName()));
+            edt_email.setText(balanceInfor.getEmail());
+            edt_firstname.setText(balanceInfor.getFirstName());
+            edt_lastname.setText(balanceInfor.getLastName());
+        }
 
-            private void loadFragment(HomeFragment homeFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, homeFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
+        // Set up button click listeners
+        btn_home_fragment.setOnClickListener(view -> loadFragment(new HomeFragment()));
+        btn_chart.setOnClickListener(view -> loadFragment(new ChartFragment()));
+        btn_categories.setOnClickListener(view -> loadFragment(new CategoryFragment()));
+        btn_home_add.setOnClickListener(view -> loadFragment(new AddExpenseFragment()));
+        btn_info.setOnClickListener(view -> loadFragment(new InformationFragment()));
+
+        btn_logout.setOnClickListener(view -> {
+            // Clear user information from SharedPreferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+            // Show logout success message
+            showToastCustom("Logged out successfully");
+            // Navigate to LoginFragment
+            loadFragment(new LoginFragment());
         });
-        btn_chart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new ChartFragment());
-            }
 
-            private void loadFragment(ChartFragment chartFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, chartFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_categories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new CategoryFragment());
-            }
-
-            private void loadFragment(CategoryFragment categoryFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, categoryFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_home_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new AddExpenseFragment());
-            }
-
-            private void loadFragment(AddExpenseFragment addExpenseFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, addExpenseFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new InformationFragment());
-            }
-
-            private void loadFragment(InformationFragment informationFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, informationFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                String email = edt_email.getText().toString();
-//                String firstName = edt_firstname.getText().toString();
-//                String lastName = edt_lastname.getText().toString();
-//                String password = edt_fullname.getText().toString();
-                int userId = sharedPreferences.getInt("userId", -1);
-
-                boolean isDeleted = dbHelper.deleteUser(userId);
-                if(isDeleted){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
-                    editor.apply();
-                    showToastCustom("Register successfully");
-                    loadFragment(new LoginFragment());
-                }else {
-                    showToastCustom("Cannot register !! Try again");
-
-                }
-            }
-
-            private void loadFragment(LoginFragment loginFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, loginFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
         return view;
     }
-    void showToastCustom(String message) {
 
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void showToastCustom(String message) {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast, view.findViewById(R.id.custom_toast_layout));
 
         ImageView icon = layout.findViewById(R.id.toast_icon);
-        icon.setImageResource(R.drawable.icon_x);
+        icon.setImageResource(R.drawable.icon_x); // Adjust as needed
 
         TextView text = layout.findViewById(R.id.toast_message);
         text.setText(message);
 
         Toast toast = new Toast(getContext());
         toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
+        toast.setView(layout); // Set custom layout for the toast
         toast.show();
-
     }
 }

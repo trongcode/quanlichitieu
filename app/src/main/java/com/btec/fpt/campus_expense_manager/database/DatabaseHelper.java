@@ -1,5 +1,7 @@
 package com.btec.fpt.campus_expense_manager.database;
 
+import static android.app.DownloadManager.COLUMN_ID;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,7 +24,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ExpenseDB";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Transactions table
     private static final String TABLE_TRANSACTION = "transactions";
@@ -45,6 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CATEGORY = "CATEGORY";
     private static final String COLUMN_CATEGORY_ID = "category_id";
     private static final String COLUMN_CATEGORY_NAME = "name";
+    private static final String COLUMN_CATEGORY = "category";
 
     public  DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -58,14 +61,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_AMOUNT + " REAL, "
                 + COLUMN_DESCRIPTION + " TEXT, "
-                + COLUMN_DATE + " TEXT,"
-                + COLUMN_TYPE + " INTEGER,"
-                + COLUMN_EMAIL + " TEXT,"
-                + COLUMN_CATEGORY_NAME + " TEXT"
-                +
+                + COLUMN_DATE + " TEXT, "
+                + COLUMN_TYPE + " INTEGER, "
+                + COLUMN_EMAIL + " TEXT ,"
+                + COLUMN_CATEGORY + " TEXT"  + ")";
 
-                ")";
+//
         db.execSQL(CREATE_TRANSACTION_TABLE);
+
 
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + " ("
                 + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -87,46 +90,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         insertDefaultCategories(db, null);
 
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2) { // Nếu phiên bản cũ nhỏ hơn 2, thêm cột category_id
+            db.execSQL("ALTER TABLE " + TABLE_TRANSACTION + " ADD COLUMN " + COLUMN_CATEGORY_ID + " INTEGER");
+            db.execSQL("PRAGMA foreign_keys=on;"); // Kích hoạt hỗ trợ khóa ngoại
+        }
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
         onCreate(db);
     }
 
+
     // Insert a new transaction record
-    public boolean insertTransaction(double amount, String description, String date, int type, String email) {
+    public boolean insertTransaction(double amount, String description, String date,
+                                     int type, String email, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         values.put(COLUMN_AMOUNT, amount);
         values.put(COLUMN_DESCRIPTION, description);
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_TYPE, type);
         values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_CATEGORY, category);
 
         try {
             long result = db.insert(TABLE_TRANSACTION, null, values);
-            return result != -1; // Return true if insertion is successful
+            return result != -1; // Trả về true nếu thêm thành công
         } catch (Exception e) {
             Log.e("Database Error", "Error inserting transaction", e);
-            return false; // Return false if there was an error
+            return false; // Trả về false nếu có lỗi
         } finally {
-            db.close(); // Ensure the database is closed
+            db.close();
         }
     }
 
 
 
-    public Cursor getAllExpenses() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION, null);
-    }
-
-
-    public boolean updateTransaction(int id, double amount, String description, String date, int type, String email) {
+    public boolean updateTransaction(int id, double amount, String description, String date, int type, String email, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_AMOUNT, amount);
@@ -135,6 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TYPE, type);
         values.put(COLUMN_EMAIL, email);
 
+        values.put(COLUMN_CATEGORY, category);
 
         int rowsAffected = db.update(TABLE_TRANSACTION, values, COLUMN_TRANSACTION_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
@@ -210,7 +217,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
     public boolean updateUser(int userId, String firstName, String lastName, String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -283,60 +289,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Category> getAllCategoryByEmail(String email) {
-        List<Category> categoryList = new ArrayList<>();
+    public List<String> getAllCategoryNamesByEmail(String email) {
+        List<String> categoryNames = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Use "IS NULL" in SQL query when email is null
+        // Prepare the query and parameters based on whether email is null
         String query;
         String[] queryParams;
 
         if (email == null) {
-            query = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_EMAIL + " IS NULL";
+            query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_EMAIL + " IS NULL";
             queryParams = null;
         } else {
-            query = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_EMAIL + " = ? OR " + COLUMN_EMAIL + " IS NULL";
+            query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORY +
+                    " WHERE " + COLUMN_EMAIL + " = ? OR " + COLUMN_EMAIL + " IS NULL";
             queryParams = new String[]{email};
         }
 
-        Cursor cursor = db.rawQuery(query, queryParams);
+        Cursor cursor = null;
 
-        if (cursor.moveToFirst()) {
-            do {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID));
-                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+        try {
+            cursor = db.rawQuery(query, queryParams);
 
-                Category category = new Category(id, name, email);
-                categoryList.add(category);
-            } while (cursor.moveToNext());
+            // Extract category names from the result
+            if (cursor.moveToFirst()) {
+                do {
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME));
+                    categoryNames.add(name);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            // Ensure cursor and database are closed to avoid leaks
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
         }
-        cursor.close();
-        db.close();
-        return categoryList;
+
+        return categoryNames;
     }
 
-
-    public List<Transaction> getTransactionsByEmail(String email) {
-        List<Transaction> transactionList = new ArrayList<>();
+    public int getCategoryIdByName(String categoryName, String email) {
         SQLiteDatabase db = this.getReadableDatabase();
-        // Use parameterized queries to prevent SQL injection
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ?", new String[]{email});
-        if (cursor.moveToFirst()) {
-            do {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
-                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
-                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
-                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                @SuppressLint("Range") String emailFromDb = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-                Transaction transaction = new Transaction(id, amount, description, date, type, emailFromDb);
-                transactionList.add(transaction);
-            } while (cursor.moveToNext());
+        Cursor cursor = db.query(TABLE_CATEGORY, new String[]{COLUMN_CATEGORY_ID}, COLUMN_CATEGORY_NAME + " = ? AND " + COLUMN_EMAIL + " = ?",
+                new String[]{categoryName, email}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                @SuppressLint("Range") int categoryId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                cursor.close();
+                return categoryId;
+            }
+            cursor.close();
         }
-        cursor.close();
-        db.close();
-        return transactionList;
+        return -1; // Not found
     }
+
+
+
+
+
+//    public List<Transaction> getTransactionsByEmail(String email) {
+//        List<Transaction> transactionList = new ArrayList<>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        // Query to join transactions with categories
+//        String query = "SELECT t." + COLUMN_TRANSACTION_ID + ", t." + COLUMN_AMOUNT + ", t." + COLUMN_DESCRIPTION +
+//                ", t." + COLUMN_DATE + ", t." + COLUMN_TYPE + ", t." + COLUMN_EMAIL +
+//                ", c." + COLUMN_CATEGORY_NAME +
+//                " FROM " + TABLE_TRANSACTION + " t " +
+//                "LEFT JOIN " + TABLE_CATEGORY + " c ON t." + COLUMN_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID +
+//                " WHERE t." + COLUMN_EMAIL + " = ?";
+//
+//        Cursor cursor = db.rawQuery(query, new String[]{email});
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
+//                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
+//                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+//                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+//                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+//                @SuppressLint("Range") String emailFromDb = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+//                @SuppressLint("Range") String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY));
+//
+//                // Create a transaction object
+//                Transaction transaction = new Transaction(id, amount, description, date, type, emailFromDb, categoryName);
+//                transactionList.add(transaction);
+//            } while (cursor.moveToNext());
+//        }
+//
+//        cursor.close();
+//        db.close();
+//        return transactionList;
+//    }
+
 
 
 
@@ -375,7 +421,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
                 @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
                 @SuppressLint("Range") String email2 = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
-                Transaction transaction = new Transaction(id, amount, description, date,type, email2 );
+                @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY));
+
+                Transaction transaction = new Transaction(id, amount, description, date,type, email2, category );
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -383,14 +431,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactionList;
     }
-    // Lấy tất cả các giao dịch thu nhập cho người dùng theo email
-    public List<Transaction> getAllIncomesByEmail(String email) {
+
+
+    /////////
+    public List<Transaction> getAllTransactionsByCategory(String email, String category) {
         List<Transaction> transactionList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Lọc các giao dịch có type = 1 (thu nhập)
-        String query = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_TYPE + " = 1";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
+        // Câu lệnh SQL để lọc theo email và type
+        String query = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_CATEGORY + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, String.valueOf(category)});
 
         if (cursor.moveToFirst()) {
             do {
@@ -398,18 +448,105 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
                 @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                @SuppressLint("Range") String userEmail = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+                @SuppressLint("Range") int typeValue = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+                @SuppressLint("Range") String emailValue = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+                @SuppressLint("Range") String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY)); // Sửa đúng tên cột
 
-                Transaction transaction = new Transaction(id, amount, description, date, type, userEmail);
+                // Tạo đối tượng Transaction
+                Transaction transaction = new Transaction(id, amount, description, date, typeValue, emailValue, categoryName);
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
         db.close();
         return transactionList;
     }
 
+    public List<Transaction> getAllTransactionsByType(String email,int type)
+    {
+        List<Transaction> transactionList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Câu lệnh SQL để lọc theo email và type
+        String query = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_TYPE + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, String.valueOf(type)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
+                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
+                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+                @SuppressLint("Range") int typeValue = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+                @SuppressLint("Range") String emailValue = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+                @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY)); // Sửa đúng tên cột
+
+                // Tạo đối tượng Transaction
+                Transaction transaction = new Transaction(id, amount, description, date, typeValue, emailValue, category);
+                transactionList.add(transaction);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return transactionList;
+    }
+
+    // Lấy tất cả các giao dịch thu nhập cho người dùng theo email
+//    public List<Transaction> getAllIncomesByEmail(String email) {
+//        List<Transaction> transactionList = new ArrayList<>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        // Query to fetch income transactions with category names
+//        String query = "SELECT t." + COLUMN_TRANSACTION_ID + ", t." + COLUMN_AMOUNT + ", t." + COLUMN_DESCRIPTION +
+//                ", t." + COLUMN_DATE + ", t." + COLUMN_TYPE + ", t." + COLUMN_EMAIL +
+//                ", c." + COLUMN_CATEGORY_NAME +
+//                " FROM " + TABLE_TRANSACTION + " t " +
+//                "LEFT JOIN " + TABLE_CATEGORY + " c ON t." + COLUMN_CATEGORY_NAME + " = c." + COLUMN_CATEGORY_NAME +
+//                " WHERE t." + COLUMN_EMAIL + " = ? AND t." + COLUMN_TYPE + " = 1";
+//
+//        Cursor cursor = db.rawQuery(query, new String[]{email});
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
+//                @SuppressLint("Range") double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_AMOUNT));
+//                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+//                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+//                @SuppressLint("Range") int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
+//                @SuppressLint("Range") String userEmail = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
+//                @SuppressLint("Range") String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+//
+//                // Create transaction object with category name
+//                Transaction transaction = new Transaction(id, amount, description, date, type, userEmail, categoryName);
+//                transactionList.add(transaction);
+//            } while (cursor.moveToNext());
+//        }
+//
+//        cursor.close();
+//        db.close();
+//        return transactionList;
+//    }
+
+
+
+    @SuppressLint("Range")
+    public int getCategoryIdByNameD(String categoryName, String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_CATEGORY_ID +
+                        " FROM " + TABLE_CATEGORY +
+                        " WHERE " + COLUMN_CATEGORY_NAME + " = ? AND " + COLUMN_EMAIL + " = ?",
+                new String[]{categoryName, email});
+
+        int categoryId = -1; // Default if no category found
+        if (cursor.moveToFirst()) {
+            categoryId = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID));
+        }
+        cursor.close();
+        db.close();
+        return categoryId;
+    }
 
     // Function to get a user by email
     public User getUserByEmail(String email) {

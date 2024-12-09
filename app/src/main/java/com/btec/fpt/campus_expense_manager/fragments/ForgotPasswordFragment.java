@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.btec.fpt.campus_expense_manager.R;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 
-public class ForgotPasswordFragment extends Fragment {
+public class  ForgotPasswordFragment extends Fragment {
 
     public ForgotPasswordFragment() {
         // Required empty public constructor

@@ -18,10 +18,13 @@ public class TransactionInfor {
     private String Description;
     private String Date;
 
-    public TransactionInfor(Double amount, String description, String date) {
+
+
+    public TransactionInfor(Double amount, String description, String date ) {
         Amount = amount;
         Description = description;
         Date = date;
+
     }
 
     public Double getAmount() {
@@ -47,4 +50,6 @@ public class TransactionInfor {
     public void setDate(String date) {
         this.Date = date;
     }
+
+
 }
