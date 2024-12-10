@@ -133,7 +133,14 @@ public class AddExpenseFragment extends Fragment {
 
                 // Show success message
                 if (isInserted) {
-                    String successMessage = (type == 0) ? "Income added successfully!" : "Expense added successfully!";
+                    String successMessage;
+                    if (type == 0) {
+                        successMessage = "Expense added successfully!";
+                    } else if (type == 1) {
+                        successMessage = "Income added successfully!";
+                    } else {
+                        successMessage = "Transaction added successfully!";
+                    }
                     showToastCustom(successMessage);
                     new android.os.Handler().postDelayed(new Runnable() {
                         @Override
