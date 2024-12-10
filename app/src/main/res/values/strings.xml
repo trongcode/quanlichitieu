@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Campus_Expense_Manager</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="description">Description</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="transaction_list">Transaction List</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="_1_200_000_vnd">1,200,000 VND</string>
+    <string name="nguyen_nang_trong">NGUYEN NANG TRONG</string>
+    <string name="visa">VISA</string>
+    <string name="nang_trong">Nang Trong</string>
+</resources>
