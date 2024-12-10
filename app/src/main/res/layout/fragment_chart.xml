@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
-    android:id="@+id/main">
+    android:orientation="vertical">
 
 
     <!-- Header -->
     <RelativeLayout
+        android:id="@+id/re1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F6918D"
-        android:padding="10dp"
-        android:id="@+id/re1">
-
+        android:padding="10dp">
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:src="@drawable/back" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -23,72 +30,88 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Chart"
+            android:textColor="@android:color/white"
             android:textSize="35sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white" />
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnBell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:src="@drawable/bell" />
     </RelativeLayout>
 
     <!-- Filter Buttons -->
     <LinearLayout
+        android:id="@+id/ln1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/re1"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
-        android:id="@+id/ln1"
-        android:gravity="center_horizontal"
-        android:layout_below="@+id/re1">
+        android:padding="10dp">
 
+        <!-- Date Range Button -->
         <Button
             android:id="@+id/btnDateRange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/F6918D"
-            android:text="01/11/2024 - 30/11/2024"
+            android:padding="8dp"
+            android:text="Select a time!"
+            android:textSize="14dp"
             android:textColor="@color/black"
-            app:cornerRadius="0dp" />
+            app:cornerRadius="8dp" /> <!-- Padding inside the button for better text spacing -->
 
-        <RadioButton
-            android:id="@+id/radioIncome"
+        <!-- RadioGroup for Expense/Income -->
+        <RadioGroup
+            android:id="@+id/typeRadioGroup"
             android:layout_width="wrap_content"
-            android:layout_height="41dp"
-            android:background="@color/F6918D"
-            android:text="Income"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp"/>
-        <RadioButton
-            android:id="@+id/btnExpense"
-            android:layout_width="wrap_content"
-            android:layout_height="41dp"
-            android:background="#8C8B8B"
-            android:text="Expense"
-            android:textColor="@color/black"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rdExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Expense" /> <!-- Space between buttons -->
+
+            <RadioButton
+                android:id="@+id/rdIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Income" />
+        </RadioGroup>
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@+id/ln1">
-    <!-- Expense Chart -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Expense"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginStart="16dp" />
+        android:layout_below="@+id/ln1"
+        android:orientation="vertical">
+        <!-- Expense Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Expense"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
 
-
-
-    <!-- Income Chart -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Income"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginStart="16dp" />
+        <!-- Income Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Income"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -145,7 +168,6 @@
             android:scaleType="centerInside"
             android:src="@drawable/user" />
     </LinearLayout>
-
 
 
 </RelativeLayout>

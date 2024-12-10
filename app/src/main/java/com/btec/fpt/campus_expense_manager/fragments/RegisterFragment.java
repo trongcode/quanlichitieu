@@ -67,12 +67,20 @@ public class RegisterFragment extends Fragment {
                 }
                 if(check){
                     showToastCustom("Register successfully");
-                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    transaction.replace(R.id.fragment_container, new LoginFragment()); // R.id.fragment_container là layout chứa fragment
-                    transaction.addToBackStack(null); // Thêm vào BackStack để có thể quay lại
-                    transaction.commit();
-                }else {
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Chuyển sang LoginFragment sau khi toast đã hiển thị
+                            LoginFragment loginFragment = new LoginFragment();
+                            getActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, loginFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    }, 1000);
+                }
+                else{
                     showToastCustom("Cannot register !! Try again");
                 }
             }

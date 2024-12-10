@@ -1,6 +1,7 @@
 package com.btec.fpt.campus_expense_manager.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,7 +29,7 @@ public class DisplayExpenseFragment extends Fragment {
     public static HomeFragment newInstance(String amount, String description, String date) {
         return null;
     }
-
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -38,10 +39,15 @@ public class DisplayExpenseFragment extends Fragment {
         loadExpenses();
         return view;
     }
+    private String getCurrentUserEmail() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", getContext().MODE_PRIVATE);
+        return sharedPreferences.getString("email", null);
+    }
 
+    String email = getCurrentUserEmail();
     private void loadExpenses() {
         ArrayList<String> expenseList = new ArrayList<>();
-        Cursor cursor = dbHelper.getAllExpenses();
+        Cursor cursor = (Cursor) dbHelper.getAllTransactionsByEmail(email);
 
         if (cursor.moveToFirst()) {
             do {

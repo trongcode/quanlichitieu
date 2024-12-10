@@ -10,57 +10,108 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/F6918D">
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/user" />
+        android:background="@color/F6918D"
+        android:id="@id/ln1">
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/user" />
 
-    <TextView
-        android:id="@+id/tvFullname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="@string/add_transaction"
-        android:textSize="24sp"
-        android:textColor="@color/black"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvFullname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="Information of you"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ln1"
+        android:id="@+id/ln2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_centerVertical="true"
-        android:padding="30dp">
+        android:layout_below="@id/ln1"
+        android:padding="30dp"
+        android:layout_centerHorizontal="true">
 
-        <EditText
+        <!-- Label cho First Name -->
+        <TextView
+            android:id="@+id/label_firstname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="First Name"
+            android:textSize="16dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- TextView cho First Name -->
+        <TextView
             android:id="@+id/edt_firstname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="First Name" />
-        <EditText
+            android:layout_marginTop="5dp"
+            android:hint="First Name"
+            android:textSize="24dp"/>
+
+        <!-- Label cho Last Name -->
+        <TextView
+            android:id="@+id/label_lastname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Name"
+            android:textSize="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- TextView cho Last Name -->
+        <TextView
             android:id="@+id/edt_lastname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:textSize="24dp"
+            android:layout_marginTop="5dp"
             android:hint="Last Name" />
-        <EditText
+
+        <!-- Label cho Full Name -->
+        <TextView
+            android:id="@+id/label_fullname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Full Name"
+            android:textSize="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- TextView cho Full Name -->
+        <TextView
             android:id="@+id/edt_fullname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:textSize="24dp"
+            android:layout_marginTop="5dp"
             android:hint="Full Name" />
 
-        <EditText
+        <!-- Label cho Email -->
+        <TextView
+            android:id="@+id/label_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="16dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- TextView cho Email -->
+        <TextView
             android:id="@+id/edt_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:textSize="24dp"
+            android:layout_marginTop="5dp"
             android:hint="Email" />
 
     </LinearLayout>
@@ -70,7 +121,7 @@
         android:layout_width="220dp"
         android:layout_height="60dp"
         android:backgroundTint="#F6918D"
-        android:layout_below="@+id/ln1"
+        android:layout_below="@+id/ln2"
         android:layout_centerHorizontal="true"
         android:text="Logout"
         android:textColor="@color/black"
@@ -132,4 +183,3 @@
     </LinearLayout>
 
 </RelativeLayout>
-

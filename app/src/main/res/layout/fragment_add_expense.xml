@@ -7,18 +7,18 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:src="@drawable/logo_asm" />
 
     <TextView
+        android:id="@+id/txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/logo"
-        android:id="@+id/txt"
+        android:layout_centerHorizontal="true"
         android:text="@string/add_transaction"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt"
         android:orientation="vertical"
+        android:layout_marginTop="-20dp"
         android:padding="30dp">
 
         <EditText
@@ -41,45 +42,58 @@
             android:id="@+id/amountEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:hint="@string/amount" />
 
         <EditText
             android:id="@+id/dateEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:hint="@string/date" />
 
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:spinnerMode="dropdown" />
+
+        <RadioGroup
+            android:id="@+id/typeRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Expense" /> <!-- Default to Expense -->
+
+            <RadioButton
+                android:id="@+id/rbIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Income" />
+        </RadioGroup>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+    <Button
+        android:id="@+id/btnAddTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:backgroundTint="#F6918D"
+        android:text="@string/add_transaction"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/ln1"
-        android:gravity="center_horizontal"
-        android:padding="10dp">
-    <Button
-        android:id="@+id/btnAddExpense"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:backgroundTint="#F6918D"
-        android:text="@string/add_expense"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:cornerRadius="15dp"
-        android:layout_marginEnd="20dp"/>
-    <Button
-        android:id="@+id/btnIncome"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:backgroundTint="#F6918D"
-        android:text="Add Income"
+        android:layout_marginTop="-10dp"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:cornerRadius="15dp" />
-    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/menuLayout"
         android:layout_width="match_parent"

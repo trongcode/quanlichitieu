@@ -102,12 +102,18 @@ public class LoginFragment extends Fragment {
 
                     // Chuyển sang màn hình chính
                     showToastCustom("Login successful");
-                    Fragment fragmentHome = new HomeFragment();
-                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_container, fragmentHome);
-                    fragmentTransaction.addToBackStack(null); // Cho phép quay lại màn hình login
-                    fragmentTransaction.commit();
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Chuyển sang LoginFragment sau khi toast đã hiển thị
+                            HomeFragment homeFragment = new HomeFragment();
+                            getActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, homeFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    }, 1000);
                 } else {
                     showToastCustom("Incorrect email or password!");
                 }

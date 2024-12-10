@@ -32,6 +32,11 @@
         android:layout_below="@+id/re1"
         android:orientation="vertical">
 
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
         <ListView
             android:id="@+id/listViewCategories"
             android:layout_width="match_parent"

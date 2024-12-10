@@ -14,7 +14,7 @@ import com.btec.fpt.campus_expense_manager.R;
 
 public class ChartFragment extends Fragment {
     private View view;
-    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
+    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btnBack, btn_info;
     public ChartFragment(){
 
     }
@@ -27,74 +27,31 @@ public class ChartFragment extends Fragment {
         btn_categories = view.findViewById(R.id.btn_categories);
         btn_home_add = view.findViewById(R.id.btn_home_add);
         btn_info = view.findViewById(R.id.btn_info);
+        btnBack = view.findViewById(R.id.btnBack);
 
 
-        btn_home_fragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new HomeFragment());
-            }
-
-            private void loadFragment(HomeFragment homeFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, homeFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_chart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new ChartFragment());
-            }
-
-            private void loadFragment(ChartFragment chartFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, chartFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_categories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new CategoryFragment());
-            }
-
-            private void loadFragment(CategoryFragment categoryFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, categoryFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_home_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new AddExpenseFragment());
-            }
-
-            private void loadFragment(AddExpenseFragment addExpenseFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, addExpenseFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new InformationFragment());
-            }
-
-            private void loadFragment(InformationFragment informationFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, informationFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-
+        setupButtonListeners();
         return view;
+    }
+
+    private void setupButtonListeners() {
+        btn_home_add.setOnClickListener(view -> loadFragment(new AddExpenseFragment()));
+        btn_categories.setOnClickListener(view -> loadFragment(new CategoryFragment()));
+        btn_info.setOnClickListener(view -> loadFragment(new InformationFragment()));
+        btn_home_fragment.setOnClickListener(view -> loadFragment(new HomeFragment()));
+        btn_chart.setOnClickListener(view -> loadFragment(new ChartFragment()));
+        btn_chart.setOnClickListener(view -> loadFragment(new ChartFragment()));
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity().onBackPressed();
+            }
+        });
+    }
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

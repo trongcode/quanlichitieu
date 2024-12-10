@@ -27,7 +27,7 @@ import com.btec.fpt.campus_expense_manager.models.UserInfor;
 public class InformationFragment extends Fragment {
     private View view;
     private TextView tvFullname, edt_fullname, edt_lastname, edt_firstname, edt_email;
-    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info, btnMenu;
+    private ImageButton btn_home_fragment, btn_chart, btn_home_add, btn_categories, btn_info;
     private DatabaseHelper dbHelper;
 
 
@@ -61,72 +61,6 @@ public class InformationFragment extends Fragment {
         edt_email.setText(balanceInfor.getEmail());
         edt_firstname.setText(balanceInfor.getFirstName());
         edt_lastname.setText(balanceInfor.getLastName());
-
-        btn_home_fragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new HomeFragment());
-            }
-
-            private void loadFragment(HomeFragment homeFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, homeFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_chart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new ChartFragment());
-            }
-
-            private void loadFragment(ChartFragment chartFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, chartFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_categories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new CategoryFragment());
-            }
-
-            private void loadFragment(CategoryFragment categoryFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, categoryFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_home_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new AddExpenseFragment());
-            }
-
-            private void loadFragment(AddExpenseFragment addExpenseFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, addExpenseFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-        btn_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new InformationFragment());
-            }
-
-            private void loadFragment(InformationFragment informationFragment) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, informationFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,18 +80,36 @@ public class InformationFragment extends Fragment {
                     editor.apply();
                 }
 
-                // Chuyển đến LoginFragment
-                Fragment fragmentLogin = new LoginFragment();
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, fragmentLogin);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
                 showToastCustom("Logged out successfully!");
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Chuyển sang LoginFragment sau khi toast đã hiển thị
+                        LoginFragment loginFragment = new LoginFragment();
+                        getActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, loginFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }, 2000);
             }
         });
+        setupButtonListeners();
         return view;
+    }
+    private void setupButtonListeners() {
+        btn_home_add.setOnClickListener(view -> loadFragment(new AddExpenseFragment()));
+        btn_categories.setOnClickListener(view -> loadFragment(new CategoryFragment()));
+        btn_info.setOnClickListener(view -> loadFragment(new InformationFragment()));
+        btn_home_fragment.setOnClickListener(view -> loadFragment(new HomeFragment()));
+        btn_chart.setOnClickListener(view -> loadFragment(new ChartFragment()));
+    }
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
     void showToastCustom(String message) {
 
